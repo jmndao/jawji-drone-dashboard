@@ -1,53 +1,33 @@
 "use client";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useMemo, useState, useEffect } from "react";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { useMemo } from "react";
 import { User } from "lucide-react";
 
-// Telemetry type and API endpoint
-const TELEMETRY_API = "http://localhost:8000/telemetry";
-type Telemetry = {
-  battery: number;
-  altitude: number;
-  max_altitude: number;
-  speed: number;
-  max_speed: number;
-  signal: string;
-  signal_bars: number;
-  resolution: string;
-  frame_rate: number;
-  flight_time: number;
-  flight_time_remaining: number;
-};
-function formatTime(seconds: number) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-}
-
-// Dynamically import a client-only map component
-const ClientOnlyMap = dynamic(() => import("@/components/ClientOnlyMap"), { ssr: false });
+const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
 
 export default function Home() {
   // Saly Aerodrome, Senegal coordinates
   const droneLocation: [number, number] = [14.4522, -17.0089];
   const mapCenter = droneLocation;
 
-  // Telemetry state
-  const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
-  useEffect(() => {
-    const fetchTelemetry = async () => {
-      try {
-        const res = await fetch(TELEMETRY_API);
-        const data = await res.json();
-        setTelemetry(data);
-      } catch (err) {
-        setTelemetry(null);
-      }
-    };
-    fetchTelemetry();
-    const interval = setInterval(fetchTelemetry, 1000);
-    return () => clearInterval(interval);
+  // Fix: Only create the drone icon on the client
+  const droneIcon = useMemo(() => {
+    if (typeof window !== "undefined" && L) {
+      return L.icon({
+        iconUrl: "/jawu-drone1.png",
+        iconSize: [48, 48],
+        iconAnchor: [24, 24],
+        popupAnchor: [0, -24],
+        className: "drone-marker-icon"
+      });
+    }
+    return undefined;
   }, []);
 
   return (
@@ -103,7 +83,15 @@ export default function Home() {
             <div className="w-full flex-1 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-orange-50 flex flex-col items-center justify-center border border-orange-100 shadow-inner">
               {/* Leaflet Map */}
               <div className="w-full h-full min-h-[250px] min-w-[250px]" style={{ height: 300, width: '100%' }}>
-                <ClientOnlyMap center={mapCenter} />
+                <MapContainer center={mapCenter} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }} scrollWheelZoom={false}>
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={droneLocation} icon={droneIcon}>
+                    <Popup>Drone Location</Popup>
+                  </Marker>
+                </MapContainer>
               </div>
               <div className="mt-2 text-xs text-gray-700 bg-gray-100 rounded px-3 py-1 shadow border border-orange-100">
                 Lat: {droneLocation[0].toFixed(5)}, Lng: {droneLocation[1].toFixed(5)}
@@ -126,39 +114,40 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-x-2 gap-y-2 w-full text-xs">
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Battery</span>
-                <span className="font-bold text-green-500 text-sm">{telemetry ? `${telemetry.battery}%` : "--"}</span>
+                <span className="font-bold text-green-500 text-sm">92%</span>
                 <div className="w-full bg-gray-200 rounded-full h-0.5 mt-1">
-                  <div className="bg-green-500 h-0.5 rounded-full" style={{width: telemetry ? `${telemetry.battery}%` : '0%'}}></div>
+                  <div className="bg-green-500 h-0.5 rounded-full" style={{width: '92%'}}></div>
                 </div>
               </div>
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Altitude</span>
-                <span className="font-bold text-sm">{telemetry ? `${telemetry.altitude}m` : "--"}</span>
-                <span className="text-gray-400 text-xs mt-0.5">Max: {telemetry ? `${telemetry.max_altitude}m` : "--"}</span>
+                <span className="font-bold text-sm">120m</span>
+                <span className="text-gray-400 text-xs mt-0.5">Max: 500m</span>
               </div>
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Speed</span>
-                <span className="font-bold text-sm">{telemetry ? `${telemetry.speed} m/s` : "--"}</span>
-                <span className="text-gray-400 text-xs mt-0.5">Max: {telemetry ? `${telemetry.max_speed} m/s` : "--"}</span>
+                <span className="font-bold text-sm">15 m/s</span>
+                <span className="text-gray-400 text-xs mt-0.5">Max: 25 m/s</span>
               </div>
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Signal</span>
-                <span className={`font-bold text-sm ${telemetry && telemetry.signal === "Strong" ? "text-green-500" : "text-red-500"}`}>{telemetry ? telemetry.signal : "--"}</span>
+                <span className="font-bold text-green-500 text-sm">Strong</span>
                 <div className="flex gap-0.5 mt-1">
-                  {telemetry ? Array.from({length: telemetry.signal_bars}).map((_, i) => (
-                    <div key={i} className="w-0.5 h-2 bg-green-500 rounded"></div>
-                  )) : null}
+                  <div className="w-0.5 h-2 bg-green-500 rounded"></div>
+                  <div className="w-0.5 h-2 bg-green-500 rounded"></div>
+                  <div className="w-0.5 h-2 bg-green-500 rounded"></div>
+                  <div className="w-0.5 h-2 bg-green-500 rounded"></div>
                 </div>
               </div>
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Resolution</span>
-                <span className="font-bold text-sm">{telemetry ? telemetry.resolution : "--"}</span>
-                <span className="text-gray-400 text-xs mt-0.5">{telemetry ? `${telemetry.frame_rate} FPS` : "--"}</span>
+                <span className="font-bold text-sm">4K</span>
+                <span className="text-gray-400 text-xs mt-0.5">30 FPS</span>
               </div>
               <div className="flex flex-col items-center p-1.5 bg-gray-100 rounded-lg border border-orange-100">
                 <span className="text-gray-500 text-xs mb-0.5">Flight Time</span>
-                <span className="font-bold text-sm">{telemetry ? formatTime(telemetry.flight_time) : "--"}</span>
-                <span className="text-gray-400 text-xs mt-0.5">Remaining: {telemetry ? formatTime(telemetry.flight_time_remaining) : "--"}</span>
+                <span className="font-bold text-sm">02:15</span>
+                <span className="text-gray-400 text-xs mt-0.5">Remaining: 18:45</span>
               </div>
             </div>
         </div>

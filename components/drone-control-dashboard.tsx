@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
@@ -23,43 +23,11 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 
-type Telemetry = {
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  speed: number;
-  battery: number;
-  heading: number;
-  satellites: number;
-  signal_strength: number;
-};
-
-function generateMockTelemetry(): Telemetry {
-  return {
-    latitude: +(24 + Math.random()).toFixed(6),
-    longitude: +(46 + Math.random()).toFixed(6),
-    altitude: +(Math.random() * 120).toFixed(2),
-    speed: +(Math.random() * 20).toFixed(2),
-    battery: +(20 + Math.random() * 80).toFixed(1),
-    heading: +(Math.random() * 360).toFixed(1),
-    satellites: Math.floor(8 + Math.random() * 12),
-    signal_strength: +(50 + Math.random() * 50).toFixed(1),
-  };
-}
-
 export default function DroneControlDashboard() {
   const [isRecording, setIsRecording] = useState(true)
   const [recordingTime, setRecordingTime] = useState("02:09")
   const [batteryLevel, setBatteryLevel] = useState(75)
   const [altitudeLimit, setAltitudeLimit] = useState(270)
-  const [telemetry, setTelemetry] = useState<Telemetry>(generateMockTelemetry())
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTelemetry(generateMockTelemetry())
-    }, 1000) // Update every second
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -231,11 +199,11 @@ export default function DroneControlDashboard() {
                 <div className="space-y-2">
                   <div>
                     <div className="text-xs text-gray-400">SPEED</div>
-                    <div className="text-lg font-bold">{telemetry.speed} m/s</div>
+                    <div className="text-lg font-bold">20 km/h</div>
                   </div>
                   <div>
                     <div className="text-xs text-gray-400">HEIGHT</div>
-                    <div className="text-lg font-bold">{telemetry.altitude} m</div>
+                    <div className="text-lg font-bold">80 m</div>
                   </div>
                   <div>
                     <div className="text-xs text-gray-400">FLIGHT TIME</div>
@@ -321,11 +289,11 @@ export default function DroneControlDashboard() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm">Battery Status</span>
-              <span className="text-sm font-bold">{telemetry.battery}%</span>
+              <span className="text-sm font-bold">{batteryLevel}%</span>
             </div>
             <div className="text-xs text-gray-400 mb-2">12 min ago</div>
             <div className="w-full h-2 bg-gray-700 rounded">
-              <div className="h-2 bg-green-500 rounded" style={{ width: `${telemetry.battery}%` }} />
+              <div className="h-2 bg-green-500 rounded" style={{ width: `${batteryLevel}%` }} />
             </div>
           </div>
 
