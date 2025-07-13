@@ -68,7 +68,7 @@ export default function Home() {
         {/* Left: Live Stream & Map */}
         <section className="flex-1 flex flex-col gap-3 min-w-[350px] h-full">
           {/* Live Stream */}
-          <div className="bg-white rounded-2xl shadow-xl p-3 flex flex-col items-center justify-center min-h-[320px] max-h-[45vh] relative border border-orange-100">
+          <div className="bg-white rounded-2xl shadow-lg p-3 flex flex-col items-center justify-center min-h-[320px] max-h-[45vh] relative border border-orange-100">
             {/* Video area */}
             <div className="relative w-full h-80 bg-gradient-to-br from-gray-100 to-orange-50 rounded-xl flex items-center justify-center overflow-hidden border border-orange-100 shadow-inner">
               {/* Minimal pause/record overlay inside video field */}
@@ -95,7 +95,7 @@ export default function Home() {
           </div>
           
           {/* Map Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-3 flex flex-col items-center flex-1 border border-orange-100 min-h-[300px] h-full">
+          <div className="bg-white rounded-2xl shadow-lg p-3 flex flex-col items-center flex-1 border border-orange-100 min-h-[200px] h-auto">
             <div className="w-full flex items-center justify-between mb-2">
               <div/>  
               <div className="flex items-center gap-2"></div>
@@ -115,7 +115,7 @@ export default function Home() {
         {/* Right: Telemetry & Controls */}
         <aside className="w-full lg:w-80 flex flex-col gap-3">
           {/* Telemetry Panel */}
-          <div className="bg-white rounded-2xl shadow-xl p-3 flex flex-col items-center border border-orange-100">
+          <div className="bg-white rounded-2xl shadow-lg p-3 flex flex-col items-center border border-orange-100">
             <div className="flex flex-col items-center mb-2">
               <Image src="/jawu-drone1.png" alt="Jawji Mini Drone" width={150} height={150} className="mb-2" />
             </div>
@@ -164,7 +164,7 @@ export default function Home() {
         </div>
   
           {/* Control Pad - Modern Circular Visual with Minimal Action Buttons and Arrows */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center border border-orange-100 mt-2">
+          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-orange-100 mt-2">
             {/* Modern Circular Pad with Arrows */}
             <div className="relative w-36 h-36 flex items-center justify-center mb-5">
               <div className="absolute inset-0 rounded-full border-2 border-gray-300 bg-gradient-to-br from-gray-100 to-gray-200 shadow-inner" />
@@ -191,6 +191,20 @@ export default function Home() {
               <button className="px-3 py-1.5 rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold shadow border border-green-200 text-xs">Takeoff</button>
               <button className="px-3 py-1.5 rounded-md bg-red-500 hover:bg-red-600 text-white font-semibold shadow border border-red-200 text-xs">Emergency</button>
               <button className="px-3 py-1.5 rounded-md bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow border border-orange-200 text-xs">RTH</button>
+            </div>
+          </div>
+          {/* Control Buttons */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border border-orange-100 mt-2">
+            <div className="flex justify-center space-x-4">
+              <button className="px-3 py-1.5 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold shadow border border-gray-300 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </button>
+              <button className="px-3 py-1.5 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold shadow border border-gray-300 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              </button>
+              <button className="px-3 py-1.5 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold shadow border border-gray-300 text-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+              </button>
             </div>
           </div>
         </aside>
